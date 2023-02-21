@@ -34,6 +34,9 @@
 <!-- leaflet js -->
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+<script src="./data/points.js"> </script>
+<script src="./data/lines.js"> </script>
+<script src="./data/polygon.js"> </script>
 
 <script>
     // Map initialization
@@ -74,11 +77,28 @@
         iconUrl: 'img/red_marker.png',
         iconSize: [38, 95],
     });
-    var singleMarker = L.marker([-23.533773, -46.625290], { icon: myIcon, draggable: true }); // draggable: true -> movimentar o marcador
+    // posso usar marcador personalizado ou padrão 'icon: myIcon'
+    var singleMarker = L.marker([-23.533773, -46.625290], { draggable: true }); // draggable: true -> movimentar o marcador
     var popup = singleMarker.bindPopup('Cidade de São Paulo' + singleMarker.getLatLng()).openPopup()
     popup.addTo(map);
 
+    var secondMarker = L.marker([-22.533773, -45.625290], { draggable: true })
+
     console.log(singleMarker.toGeoJSON())
+
+
+    /*----------------- GeoJSON -----------------*/
+    var pointData = L.geoJSON(pointsJSON).addTo(map)
+    var lineData = L.geoJSON(linesJSON).addTo(map)
+    var polygonData = L.geoJSON(polygonJSON, {
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup('<b>Name: </b>' + feature.properties.name)
+        },
+        style: {
+            fillColor: 'red',
+            fillOpacity: 1,
+            stroke: '#c0c0c0' }
+    }).addTo(map)
 
     // Layer controller 
     var baseMaps = {
@@ -89,11 +109,19 @@
     };
 
     var overlayMaps = {
-        "Marker": singleMarker
+        "First Marker": singleMarker,
+        "Second Marker": secondMarker,
+        "Point Data": pointData,
+        "Line Data": lineData,
+        "Polygon Data": polygonData,
     };
 
-    map.removeLayer(osm)
+    //map.removeLayer(osm)
 
     L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+
+
+
+
 
 </script>
